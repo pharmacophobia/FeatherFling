@@ -7,6 +7,14 @@ Unlike fragile byte-level steganography (such as zero-width Unicode characters l
 
 ---
 
+## 📥 Direct APK Download & Install
+
+| Direct 1-Tap Download | Scan QR Code with Phone Camera to Install |
+| :---: | :---: |
+| [![Download APK](https://img.shields.io/badge/Download-FeatherFling.apk-7C4DFF?style=for-the-badge&logo=android&logoColor=white)](https://github.com/pharmacophobia/FeatherFling/raw/main/FeatherFling.apk)<br><br>👉 **[Click here to download FeatherFling.apk (14.2 MB)](https://github.com/pharmacophobia/FeatherFling/raw/main/FeatherFling.apk)**<br><br>📦 Alternate: [Official GitHub Release v1.0.0](https://github.com/pharmacophobia/FeatherFling/releases/tag/v1.0.0) | <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://github.com/pharmacophobia/FeatherFling/raw/main/FeatherFling.apk" width="180" height="180" alt="Scan to install APK" /><br>*(Point your phone camera to download)* |
+
+---
+
 ## 🚀 Key Features
 
 ### 1. Carrier-Proof Linguistic & Structural Encoding

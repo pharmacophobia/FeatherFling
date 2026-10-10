@@ -16,6 +16,11 @@ import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import kotlinx.coroutines.launch
+import androidx.compose.foundation.Image
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
+import com.stealthsms.app.R
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -59,17 +64,71 @@ fun MainScreen(initialIncomingText: String) {
             TopAppBar(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "🪶 Feather Fling",
-                            fontWeight = FontWeight.Bold,
-                            color = StealthPrimary,
-                            fontSize = 20.sp
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_bird_avatar),
+                            contentDescription = "Feather Fling Cartoon Bird Icon",
+                            modifier = Modifier
+                                .size(34.dp)
+                                .clip(RoundedCornerShape(8.dp))
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Linguistic Stego",
-                            color = StealthOnSurfaceMuted,
-                            fontSize = 13.sp
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                text = "Feather Fling",
+                                fontWeight = FontWeight.Bold,
+                                color = StealthPrimary,
+                                fontSize = 18.sp
+                            )
+                            Text(
+                                text = "Linguistic Steganography",
+                                color = StealthOnSurfaceMuted,
+                                fontSize = 11.sp
+                            )
+                        }
+                    }
+                },
+                actions = {
+                    var showUpdateDialog by remember { mutableStateOf(false) }
+                    var updateInfo by remember { mutableStateOf<com.stealthsms.app.AppUpdateInfo?>(null) }
+                    var isCheckingUpdate by remember { mutableStateOf(false) }
+                    val context = LocalContext.current
+                    val updater = remember { com.stealthsms.app.MobileAppUpdater(context, "pharmacophobia/FeatherFling") }
+                    val scope = rememberCoroutineScope()
+
+                    IconButton(
+                        onClick = {
+                            if (!isCheckingUpdate) {
+                                isCheckingUpdate = true
+                                scope.launch {
+                                    try {
+                                        val info = updater.checkForUpdates()
+                                        updateInfo = info
+                                        showUpdateDialog = true
+                                    } catch (e: Exception) {
+                                        android.widget.Toast.makeText(context, "Update check failed: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
+                                    } finally {
+                                        isCheckingUpdate = false
+                                    }
+                                }
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.SystemUpdate,
+                            contentDescription = "Check for Updates",
+                            tint = if (isCheckingUpdate) StealthPrimary else StealthOnSurfaceMuted
+                        )
+                    }
+
+                    if (showUpdateDialog && updateInfo != null) {
+                        com.stealthsms.app.InAppUpdateDialog(
+                            appName = "Feather Fling",
+                            updateInfo = updateInfo!!,
+                            onDismiss = { showUpdateDialog = false },
+                            onInstallUpdate = {
+                                showUpdateDialog = false
+                                updater.downloadAndInstallApk(updateInfo!!)
+                            }
                         )
                     }
                 },
@@ -95,12 +154,18 @@ fun MainScreen(initialIncomingText: String) {
                 NavigationBarItem(
                     selected = selectedTab == 2,
                     onClick = { selectedTab = 2 },
-                    icon = { Icon(Icons.Default.Science, contentDescription = "Lab") },
-                    label = { Text("Test Lab") }
+                    icon = { Icon(Icons.Default.Lock, contentDescription = "Lock Assistant") },
+                    label = { Text("Lock & Key") }
                 )
                 NavigationBarItem(
                     selected = selectedTab == 3,
                     onClick = { selectedTab = 3 },
+                    icon = { Icon(Icons.Default.Science, contentDescription = "Lab") },
+                    label = { Text("Test Lab") }
+                )
+                NavigationBarItem(
+                    selected = selectedTab == 4,
+                    onClick = { selectedTab = 4 },
                     icon = { Icon(Icons.Default.Info, contentDescription = "Guide") },
                     label = { Text("Guide") }
                 )
@@ -112,8 +177,9 @@ fun MainScreen(initialIncomingText: String) {
             when (selectedTab) {
                 0 -> EncodeTab()
                 1 -> DecodeTab(initialText = initialIncomingText)
-                2 -> TestLabTab()
-                3 -> GuideTab()
+                2 -> KeyboardAssistantTab()
+                3 -> TestLabTab()
+                4 -> GuideTab()
             }
         }
     }

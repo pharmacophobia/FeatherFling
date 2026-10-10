@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Feather Fling</string>
-    <string name="accessibility_service_name">Feather Fling Floating Lock Assistant</string>
-    <string name="accessibility_service_description">Displays a floating Lock button whenever you type in Messenger or any messaging app. Tapping the Lock button runs your text through Feather Fling steganography and places the cover text in the message box ready to send.</string>
-    <string name="keyboard_name">Feather Fling Keyboard</string>
-    <string name="keyboard_description">Virtual keyboard with a built-in Lock button to encode secret messages directly into carrier-proof cover text.</string>
 </resources>

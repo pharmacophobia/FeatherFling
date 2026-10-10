@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.sp
 import com.stealthsms.app.sms.SmsDispatcher
 import com.stealthsms.app.stego.*
 
-class MainActivity : ComponentActivity() {
+class MainActivity : androidx.fragment.app.FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,133 +54,32 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(initialIncomingText: String) {
-    var selectedTab by remember { mutableStateOf(if (initialIncomingText.isNotBlank()) 1 else 0) }
+    val context = LocalContext.current
+    val prefs = remember { com.stealthsms.app.pref.FeatherFlingPreferences(context) }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_bird_avatar),
-                            contentDescription = "Feather Fling Cartoon Bird Icon",
-                            modifier = Modifier
-                                .size(34.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                        )
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Column {
-                            Text(
-                                text = "Feather Fling",
-                                fontWeight = FontWeight.Bold,
-                                color = StealthPrimary,
-                                fontSize = 18.sp
-                            )
-                            Text(
-                                text = "Linguistic Steganography",
-                                color = StealthOnSurfaceMuted,
-                                fontSize = 11.sp
-                            )
-                        }
-                    }
-                },
-                actions = {
-                    var showUpdateDialog by remember { mutableStateOf(false) }
-                    var updateInfo by remember { mutableStateOf<com.stealthsms.app.AppUpdateInfo?>(null) }
-                    var isCheckingUpdate by remember { mutableStateOf(false) }
-                    val context = LocalContext.current
-                    val updater = remember { com.stealthsms.app.MobileAppUpdater(context, "pharmacophobia/FeatherFling") }
-                    val scope = rememberCoroutineScope()
+    var isUnlocked by remember { mutableStateOf(!prefs.isGameMenuEnabled) }
+    var isStegoSuiteOpen by remember { mutableStateOf(initialIncomingText.isNotBlank()) }
 
-                    IconButton(
-                        onClick = {
-                            if (!isCheckingUpdate) {
-                                isCheckingUpdate = true
-                                scope.launch {
-                                    try {
-                                        val info = updater.checkForUpdates()
-                                        updateInfo = info
-                                        showUpdateDialog = true
-                                    } catch (e: Exception) {
-                                        android.widget.Toast.makeText(context, "Update check failed: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
-                                    } finally {
-                                        isCheckingUpdate = false
-                                    }
-                                }
-                            }
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.SystemUpdate,
-                            contentDescription = "Check for Updates",
-                            tint = if (isCheckingUpdate) StealthPrimary else StealthOnSurfaceMuted
-                        )
-                    }
-
-                    if (showUpdateDialog && updateInfo != null) {
-                        com.stealthsms.app.InAppUpdateDialog(
-                            appName = "Feather Fling",
-                            updateInfo = updateInfo!!,
-                            onDismiss = { showUpdateDialog = false },
-                            onInstallUpdate = {
-                                showUpdateDialog = false
-                                updater.downloadAndInstallApk(updateInfo!!)
-                            }
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = StealthSurfaceVariant
-                )
+    if (!isUnlocked) {
+        GameDisguiseScreen(
+            onUnlock = { isUnlocked = true }
+        )
+    } else {
+        if (isStegoSuiteOpen) {
+            StegoSuiteScreen(
+                initialIncomingText = initialIncomingText,
+                onBackToMessenger = { isStegoSuiteOpen = false },
+                onRelockApp = {
+                    isUnlocked = false
+                    isStegoSuiteOpen = false
+                }
             )
-        },
-        bottomBar = {
-            NavigationBar(containerColor = StealthSurfaceVariant) {
-                NavigationBarItem(
-                    selected = selectedTab == 0,
-                    onClick = { selectedTab = 0 },
-                    icon = { Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Encode") },
-                    label = { Text("Encode") }
-                )
-                NavigationBarItem(
-                    selected = selectedTab == 1,
-                    onClick = { selectedTab = 1 },
-                    icon = { Icon(Icons.Default.LockOpen, contentDescription = "Decode") },
-                    label = { Text("Decode") }
-                )
-                NavigationBarItem(
-                    selected = selectedTab == 2,
-                    onClick = { selectedTab = 2 },
-                    icon = { Icon(Icons.Default.Lock, contentDescription = "Lock Assistant") },
-                    label = { Text("Lock & Key") }
-                )
-                NavigationBarItem(
-                    selected = selectedTab == 3,
-                    onClick = { selectedTab = 3 },
-                    icon = { Icon(Icons.Default.Science, contentDescription = "Lab") },
-                    label = { Text("Test Lab") }
-                )
-                NavigationBarItem(
-                    selected = selectedTab == 4,
-                    onClick = { selectedTab = 4 },
-                    icon = { Icon(Icons.Default.Info, contentDescription = "Guide") },
-                    label = { Text("Guide") }
-                )
-            }
-        },
-        containerColor = StealthBackground
-    ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues)) {
-            when (selectedTab) {
-                0 -> EncodeTab()
-                1 -> DecodeTab(initialText = initialIncomingText)
-                2 -> KeyboardAssistantTab()
-                3 -> TestLabTab()
-                4 -> GuideTab()
-            }
+        } else {
+            MessengerScreen(
+                onOpenStegoSuite = { isStegoSuiteOpen = true }
+            )
         }
     }
 }

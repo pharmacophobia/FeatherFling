@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Optional permissions for direct SMS testing -->
+    <!-- SMS Messenger permissions -->
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
     
-    <!-- Floating Lock Assistant & Accessibility permissions -->
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <!-- Security & Biometrics -->
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <!-- In-app update permissions -->
@@ -41,7 +42,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- Context Menu "Feather Fling" across any messaging app -->
+            <!-- Context Menu "Feather Fling" across text selection -->
             <intent-filter>
                 <action android:name="android.intent.action.PROCESS_TEXT" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -49,31 +50,15 @@
             </intent-filter>
         </activity>
 
-        <!-- Floating Lock Assistant Accessibility Service -->
-        <service
-            android:name=".service.FeatherFlingAccessibilityService"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+        <!-- Receiver for incoming SMS messages -->
+        <receiver
+            android:name=".sms.SmsReceiver"
+            android:permission="android.permission.BROADCAST_SMS"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService" />
+            <intent-filter android:priority="999">
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
-            <meta-data
-                android:name="android.accessibilityservice"
-                android:resource="@xml/accessibility_service_config" />
-        </service>
-
-        <!-- Feather Fling Virtual Keyboard Service -->
-        <service
-            android:name=".keyboard.FeatherFlingKeyboardService"
-            android:permission="android.permission.BIND_INPUT_METHOD"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.view.InputMethod" />
-            </intent-filter>
-            <meta-data
-                android:name="android.view.im"
-                android:resource="@xml/method" />
-        </service>
+        </receiver>
 
     </application>
 

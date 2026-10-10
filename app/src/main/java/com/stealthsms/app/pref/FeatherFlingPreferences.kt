@@ -7,6 +7,14 @@ import com.stealthsms.app.stego.StegoMode
 class FeatherFlingPreferences(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("feather_fling_prefs", Context.MODE_PRIVATE)
 
+    var isGameMenuEnabled: Boolean
+        get() = prefs.getBoolean("game_menu_enabled", true)
+        set(value) = prefs.edit().putBoolean("game_menu_enabled", value).apply()
+
+    var isBiometricsEnabled: Boolean
+        get() = prefs.getBoolean("biometrics_enabled", false)
+        set(value) = prefs.edit().putBoolean("biometrics_enabled", value).apply()
+
     var defaultMode: StegoMode
         get() {
             val name = prefs.getString("default_stego_mode", StegoMode.WORDLIST_GENERATOR.name)
@@ -21,20 +29,4 @@ class FeatherFlingPreferences(context: Context) {
     var defaultPassphrase: String
         get() = prefs.getString("default_passphrase", "") ?: ""
         set(value) = prefs.edit().putString("default_passphrase", value).apply()
-
-    var isFloatingButtonEnabled: Boolean
-        get() = prefs.getBoolean("floating_button_enabled", true)
-        set(value) = prefs.edit().putBoolean("floating_button_enabled", value).apply()
-
-    var showOnlyWhenTyping: Boolean
-        get() = prefs.getBoolean("show_only_when_typing", false)
-        set(value) = prefs.edit().putBoolean("show_only_when_typing", value).apply()
-
-    var buttonPosX: Int
-        get() = prefs.getInt("button_pos_x", 40)
-        set(value) = prefs.edit().putInt("button_pos_x", value).apply()
-
-    var buttonPosY: Int
-        get() = prefs.getInt("button_pos_y", 600)
-        set(value) = prefs.edit().putInt("button_pos_y", value).apply()
 }
